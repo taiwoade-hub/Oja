@@ -1,0 +1,25 @@
+export type StoreProduct = {
+  id: number;
+  categoryId: number | null;
+  categoryName?: string | null;
+  brand: string;
+  name: string;
+  slug: string;
+  description: string;
+  priceKobo: number;
+  previousPriceKobo: number | null;
+  stock: number;
+  lowStockThreshold: number;
+  rating: number;
+  reviewCount: number;
+  imageUrl: string;
+  imageKey: string | null;
+  gallery: string[];
+  colors: string[];
+  sizes: string[];
+  specifications: Record<string, string>;
+  featured: boolean;
+  bestSeller: boolean;
+  newArrival: boolean;
+  published: boolean;
+};
