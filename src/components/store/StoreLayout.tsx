@@ -6,6 +6,7 @@ import { Logo } from "@/components/Logo";
 import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
 import { money, shortDate } from "@/lib/format";
+import { resolveAssetUrl } from "@/lib/assets";
 
 function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (op
           {query && results.data?.length === 0 && <div className="empty-state"><h3>No close matches</h3><p>Try a broader product name or browse the full collection.</p><Link to="/explore" onClick={() => onOpenChange(false)} className="text-link">Explore everything</Link></div>}
           {query && results.data?.slice(0, 5).map((product) => (
             <Link to={`/product/${product.id}`} key={product.id} onClick={() => onOpenChange(false)} className="search-result">
-              <img src={product.imageUrl} alt="" /><span><small>{product.brand}</small><strong>{product.name}</strong></span><b>{money(product.priceKobo)}</b>
+              <img src={resolveAssetUrl(product.imageUrl)} alt="" loading="lazy" decoding="async" /><span><small>{product.brand}</small><strong>{product.name}</strong></span><b>{money(product.priceKobo)}</b>
             </Link>
           ))}
         </div>

@@ -21,6 +21,7 @@ import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
 import { money, rating } from "@/lib/format";
 import { ProductCard } from "@/components/store/ProductCard";
+import { resolveAssetUrl } from "@/lib/assets";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -202,9 +203,15 @@ export default function ProductPage() {
             >
               <img
                 key={gallery[image] ?? product.imageUrl}
-                src={gallery[image] ?? product.imageUrl}
+                src={resolveAssetUrl(gallery[image] ?? product.imageUrl)}
                 alt={product.name}
                 className="gallery-image-animated"
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.src = resolveAssetUrl("/products/2_Headphones_product_photography_Photos.png");
+                }}
               />
             </button>
 
@@ -259,7 +266,16 @@ export default function ProductPage() {
                   }}
                   aria-label={`View image ${index + 1}`}
                 >
-                  <img src={src} alt="" />
+                  <img
+                    src={resolveAssetUrl(src)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.src = resolveAssetUrl("/products/2_Headphones_product_photography_Photos.png");
+                    }}
+                  />
                   {index === image && autoPlay && (
                     <div
                       className="thumb-progress"

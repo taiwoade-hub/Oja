@@ -13,7 +13,7 @@ export type StoreProduct = {
   rating: number;
   reviewCount: number;
   imageUrl: string;
-  imageKey: string | null;
+  imageKey?: string | null;
   gallery: string[];
   colors: string[];
   sizes: string[];
@@ -22,4 +22,6 @@ export type StoreProduct = {
   bestSeller: boolean;
   newArrival: boolean;
   published: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 };

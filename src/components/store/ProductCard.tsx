@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { trpc } from "@/providers/trpc";
 import { useAuth } from "@/hooks/useAuth";
 import { money } from "@/lib/format";
+import { resolveAssetUrl } from "@/lib/assets";
 import type { StoreProduct } from "@/types/commerce";
 
 export function ProductCard({ product, list = false }: { product: StoreProduct; list?: boolean }) {
@@ -27,7 +28,18 @@ export function ProductCard({ product, list = false }: { product: StoreProduct; 
     <article className={`product-card ${list ? "product-card--list" : ""}`}>
       <div className="product-media">
         <Link to={`/product/${product.id}`} aria-label={`View ${product.name}`}>
-          <img src={product.imageUrl} alt={product.name} loading="lazy" />
+          <img
+            src={resolveAssetUrl(product.imageUrl)}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (!target.src.includes("placeholder")) {
+                target.src = resolveAssetUrl("/products/2_Headphones_product_photography_Photos.png");
+              }
+            }}
+          />
         </Link>
         {discount > 0 && <span className="discount-tag">−{discount}%</span>}
         <button className={`media-action media-action--heart ${saved ? "is-saved" : ""}`} aria-label={saved ? "Remove from wishlist" : "Save to wishlist"} onClick={() => requireAuth() && toggle.mutate({ productId: product.id })} disabled={toggle.isPending}>

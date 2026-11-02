@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { trpc } from "@/providers/trpc";
 import { money } from "@/lib/format";
+import { resolveAssetUrl } from "@/lib/assets";
 import { AuthGate } from "@/components/store/AuthGate";
 import { AddressForm } from "@/components/store/AddressForm";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -58,7 +59,7 @@ function CheckoutContent() {
           </div></div>
         </section>
       </div>
-      <aside className="order-summary checkout-summary"><h2>Your order</h2><div className="checkout-products">{quote.data?.items.map((item) => <div key={item.id}><img src={item.product.imageUrl} alt="" /><span><strong>{item.product.name}</strong><small>Qty {item.quantity}{item.variant ? ` · ${item.variant}` : ""}</small></span><b>{money(item.product.priceKobo * item.quantity)}</b></div>)}</div>
+      <aside className="order-summary checkout-summary"><h2>Your order</h2><div className="checkout-products">{quote.data?.items.map((item) => <div key={item.id}><img src={resolveAssetUrl(item.product.imageUrl)} alt="" loading="lazy" decoding="async" /><span><strong>{item.product.name}</strong><small>Qty {item.quantity}{item.variant ? ` · ${item.variant}` : ""}</small></span><b>{money(item.product.priceKobo * item.quantity)}</b></div>)}</div>
         <form className="coupon-form" onSubmit={(event) => { event.preventDefault(); setCoupon(couponInput.trim() || undefined); }}><label htmlFor="coupon">Promotion code</label><div><input id="coupon" value={couponInput} onChange={(e) => setCouponInput(e.target.value)} placeholder="e.g. OJA15" /><button className="btn-secondary" type="submit">Apply</button></div>{coupon && quote.data?.couponMessage && <p className="field-error">{quote.data.couponMessage}</p>}{coupon && !quote.data?.couponMessage && (quote.data?.discountKobo ?? 0) > 0 && <p className="field-success">{coupon.toUpperCase()} applied.</p>}</form>
         <dl><div><dt>Subtotal</dt><dd>{money(quote.data?.subtotalKobo ?? 0)}</dd></div>{(quote.data?.discountKobo ?? 0) > 0 && <div className="discount-line"><dt>Discount</dt><dd>−{money(quote.data?.discountKobo ?? 0)}</dd></div>}<div><dt>Delivery</dt><dd>{quote.data?.deliveryFeeKobo === 0 ? "Free" : money(quote.data?.deliveryFeeKobo ?? 0)}</dd></div><div className="summary-total"><dt>Total</dt><dd>{money(quote.data?.totalKobo ?? 0)}</dd></div></dl>
         <button className="btn-primary w-full" disabled={!canPlace} onClick={() => addressId && placeOrder.mutate({ addressId, deliveryMethod, coupon, paymentMethod, idempotencyKey: idempotencyKey.current })}>{placeOrder.isPending ? <LoaderCircle className="spin" size={17} /> : <LockKeyhole size={16} />} {placeOrder.isPending ? "Placing order…" : "Place order"}{!placeOrder.isPending && <ArrowRight size={16} />}</button>
