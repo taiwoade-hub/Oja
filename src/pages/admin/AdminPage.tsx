@@ -1,8 +1,51 @@
-import { BarChart3, BellRing, Boxes, ChevronRight, CircleDollarSign, ExternalLink, FolderTree, LayoutDashboard, LayoutTemplate, LoaderCircle, LogOut, Menu, Package, Settings, ShoppingBag, Users, X } from "lucide-react";
-import { useState } from "react";
+import { BarChart3, BellRing, Boxes, ChevronRight, CircleDollarSign, ExternalLink, FolderTree, LayoutDashboard, LayoutTemplate, LoaderCircle, LogOut, Menu, Package, RefreshCw, Settings, ShoppingBag, Users, X } from "lucide-react";
+import { Component, useState, type ErrorInfo, type ReactNode } from "react";
 import { Link, NavLink, Navigate, useNavigate, useParams } from "react-router";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
+
+class AdminErrorBoundary extends Component<
+  { children: ReactNode; section: string },
+  { hasError: boolean; error: Error | null }
+> {
+  state = { hasError: false, error: null };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Admin Page Section Error:", error, info);
+  }
+  componentDidUpdate(prevProps: { section: string }) {
+    if (prevProps.section !== this.props.section && this.state.hasError) {
+      this.setState({ hasError: false, error: null });
+    }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="admin-loading" style={{ minHeight: "50vh", padding: "40px 20px" }}>
+          <Logo />
+          <h2>Section temporarily unavailable</h2>
+          <p style={{ maxWidth: "420px", fontSize: "13px", color: "var(--muted)" }}>
+            {this.state.error?.message || "Could not load this section on your current browser."}
+          </p>
+          <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+            <button
+              className="btn-primary"
+              onClick={() => this.setState({ hasError: false, error: null })}
+            >
+              <RefreshCw size={15} /> Reload section
+            </button>
+            <Link to="/admin/overview" className="btn-secondary">
+              Go to overview
+            </Link>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import { AdminOverview } from "./AdminOverview";
 import { AdminProducts, AdminCategories, AdminInventory, AdminHomepage } from "./AdminCatalog";
 import { AdminOrders } from "./AdminOrders";
@@ -108,7 +151,11 @@ export default function AdminPage() {
     {menuOpen && <button className="admin-scrim" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
     <main className="admin-main">
       <header className="admin-topbar"><button className="icon-btn admin-menu-button" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={20} /></button><div><span className="mono-label">OJA / {current.slug.toUpperCase()}</span><h1>{current.label}</h1></div><div className="admin-topbar__meta"><span className="live-dot" /> Store online<small>{new Date().toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</small></div></header>
-      <div className="admin-content"><AdminContent section={section} /></div>
+      <div className="admin-content">
+        <AdminErrorBoundary section={section}>
+          <AdminContent section={section} />
+        </AdminErrorBoundary>
+      </div>
       <footer className="admin-footer"><span><BarChart3 size={14} /> Live store data</span><span>Oja operations · 2026</span></footer>
     </main>
   </div>;

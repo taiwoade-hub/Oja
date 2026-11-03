@@ -106,7 +106,14 @@ export function AdminInventory() {
 
 function HomepageSectionEditor({ section, products }: { section: { id: number; type: string; title: string; subtitle: string | null; position: number; enabled: boolean; productIdsJson: string }; products: StoreProduct[] }) {
   const utils = trpc.useUtils();
-  const initialIds = JSON.parse(section.productIdsJson) as number[];
+  let initialIds: number[] = [];
+  try {
+    initialIds = Array.isArray((section as any).productIds)
+      ? (section as any).productIds
+      : JSON.parse(section.productIdsJson || "[]");
+  } catch {
+    initialIds = [];
+  }
   const [title, setTitle] = useState(section.title);
   const [subtitle, setSubtitle] = useState(section.subtitle ?? "");
   const [position, setPosition] = useState(section.position);

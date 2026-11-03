@@ -958,11 +958,32 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
 
     // 4. ADMIN PROCEDURES
     if (proc === "admin.overview") {
+      const days = [
+        { label: "Mon", revenueKobo: 4500000, orders: 3 },
+        { label: "Tue", revenueKobo: 6800000, orders: 4 },
+        { label: "Wed", revenueKobo: 5200000, orders: 3 },
+        { label: "Thu", revenueKobo: 8900000, orders: 6 },
+        { label: "Fri", revenueKobo: 7100000, orders: 5 },
+        { label: "Sat", revenueKobo: 9400000, orders: 7 },
+        { label: "Sun", revenueKobo: 6600000, orders: 4 },
+      ];
       return {
         revenueKobo: 48500000,
+        orderCount: 28,
         ordersCount: 28,
+        customerCount: 142,
         customersCount: 142,
+        productCount: DEMO_PRODUCTS.length,
+        pendingCount: 3,
+        completedCount: 22,
         lowStock: DEMO_PRODUCTS.filter((p) => p.stock <= p.lowStockThreshold),
+        days,
+        top: [
+          { name: "Tune 730BT Wireless Headphones", quantity: 18, revenueKobo: 33300000 },
+          { name: "OM-5 Mark II Camera · Sand", quantity: 6, revenueKobo: 87000000 },
+          { name: "Harmonie Daily Ritual Set", quantity: 14, revenueKobo: 12040000 },
+          { name: "Generation Leather Backpack", quantity: 11, revenueKobo: 14080000 },
+        ],
         recent: [
           {
             order: {
@@ -986,6 +1007,18 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
           },
         ],
       };
+    }
+
+    if (proc === "admin.products") {
+      return DEMO_PRODUCTS;
+    }
+
+    if (proc === "admin.categories") {
+      return DEMO_CATEGORIES;
+    }
+
+    if (proc === "admin.homepage") {
+      return DEMO_HOMEPAGE_SECTIONS;
     }
 
     if (proc === "admin.customers") {
@@ -1079,9 +1112,18 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
       proc === "admin.setCouponActive" ||
       proc === "admin.updateSetting" ||
       proc === "admin.updateOrderStatus" ||
+      proc === "admin.updateOrder" ||
       proc === "admin.adjustInventory" ||
+      proc === "admin.adjustStock" ||
       proc === "admin.upsertProduct" ||
-      proc === "admin.deleteProduct"
+      proc === "admin.createProduct" ||
+      proc === "admin.updateProduct" ||
+      proc === "admin.deleteProduct" ||
+      proc === "admin.createCategory" ||
+      proc === "admin.updateCategory" ||
+      proc === "admin.createHomepageSection" ||
+      proc === "admin.updateHomepage" ||
+      proc === "admin.deleteHomepageSection"
     ) {
       return { ok: true };
     }

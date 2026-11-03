@@ -29,7 +29,7 @@
 .admin-footer span { display: flex; align-items: center; gap: 6px; }
 .admin-stack { display: grid; gap: 22px; }
 .admin-panel { min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: white; }
-.admin-welcome { display: flex; align-items: center; justify-content: space-between; gap: 25px; border-radius: 12px; padding: 28px 30px; background: var(--ink); color: white; }
+.admin-welcome { display: flex; align-items: center; justify-content: space-between; gap: 25px; border-radius: 14px; padding: 28px 30px; background: linear-gradient(145deg, #24262e 0%, #17181c 100%); border: 1px solid #32353f; color: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
 .admin-welcome .mono-label { color: #a9abb2; }
 .admin-welcome h2 { margin: 7px 0; font-size: 26px; }
 .admin-welcome p { color: #b7b8bd; font-size: 11px; }
