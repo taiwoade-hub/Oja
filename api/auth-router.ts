@@ -26,20 +26,31 @@ export const authRouter = createRouter({
       let unionId: string;
       let name: string;
 
+      const isAdminRequest =
+        input?.role === "admin" ||
+        email === "admin@oja.store" ||
+        (email ? email.includes("admin") : false);
+
       if (email) {
         // If email was provided, look for an existing user or create one
         const userByEmail = await findUserByEmail(email);
         if (userByEmail) {
-          unionId = userByEmail.unionId;
-          name = userByEmail.name ?? email.split("@")[0];
-          role = (userByEmail.role as "user" | "admin") ?? "user";
+          unionId = isAdminRequest ? (env.ownerUnionId || "seed-admin") : userByEmail.unionId;
+          name = userByEmail.name ?? (isAdminRequest ? "Store Administrator" : email.split("@")[0]);
+          role = isAdminRequest ? "admin" : ((userByEmail.role as "user" | "admin") ?? "user");
         } else {
           // Normalize unionId from email
-          unionId = `user-${email.replace(/[^a-zA-Z0-9]/g, "_")}`;
-          name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+          unionId = isAdminRequest
+            ? (env.ownerUnionId || "seed-admin")
+            : `user-${email.replace(/[^a-zA-Z0-9]/g, "_")}`;
+          name = isAdminRequest
+            ? "Store Administrator"
+            : email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+          role = isAdminRequest ? "admin" : "user";
         }
       } else {
         // Fallback or demo role login
+        role = isAdminRequest ? "admin" : role;
         unionId = role === "admin" ? (env.ownerUnionId || "seed-admin") : "seed-customer-amara";
         name = role === "admin" ? "Store Administrator" : "Amara Okafor";
         email = role === "admin" ? "admin@oja.store" : "amara@example.com";
@@ -52,6 +63,13 @@ export const authRouter = createRouter({
           name,
           email,
           role,
+          lastSignInAt: new Date(),
+        });
+        existing = await findUserByUnionId(unionId);
+      } else if (role === "admin" && existing.role !== "admin") {
+        await upsertUser({
+          ...existing,
+          role: "admin",
           lastSignInAt: new Date(),
         });
         existing = await findUserByUnionId(unionId);

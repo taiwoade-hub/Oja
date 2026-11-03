@@ -602,12 +602,16 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
 
   const results = procedures.map((proc, index) => {
     // Robust extraction of input payload regardless of batch or superjson wrapper
-    const paramItem = inputParams?.[String(index)] ?? (index === 0 ? inputParams : undefined);
+    const paramItem =
+      inputParams && Object.keys(inputParams).length > 0
+        ? inputParams[String(index)] ?? (index === 0 ? inputParams : undefined)
+        : undefined;
     const bodyItem =
       bodyObj?.[String(index)] ??
       (Array.isArray(bodyObj) ? bodyObj[index] : undefined) ??
       (index === 0 ? bodyObj : undefined);
-    const raw = paramItem ?? bodyItem;
+    // Mutations send data in bodyObj, queries send in inputParams
+    const raw = bodyItem !== undefined ? bodyItem : paramItem;
     let input: any = {};
     if (raw && typeof raw === "object") {
       input = "json" in raw ? raw.json ?? {} : raw;
@@ -679,20 +683,25 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
     }
 
     if (proc === "auth.login") {
-      const role = input.role ?? "user";
+      const email = input.email?.trim().toLowerCase();
+      const isAdmin =
+        input.role === "admin" ||
+        email === "admin@oja.store" ||
+        (email ? email.includes("admin") : false);
+      const role: "admin" | "user" = isAdmin ? "admin" : (input.role ?? "user");
       const name =
         role === "admin"
           ? "Store Administrator"
-          : input.email
-          ? input.email.split("@")[0]
+          : email
+          ? email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
           : "Amara Okafor";
-      const email =
-        input.email || (role === "admin" ? "admin@oja.store" : "amara@example.com");
+      const finalEmail =
+        email || (role === "admin" ? "admin@oja.store" : "amara@example.com");
       const user = {
-        id: 1,
-        unionId: `user-${email.replace(/[^a-zA-Z0-9]/g, "_")}`,
+        id: role === "admin" ? 2 : 1,
+        unionId: role === "admin" ? "seed-admin" : `user-${finalEmail.replace(/[^a-zA-Z0-9]/g, "_")}`,
         name,
-        email,
+        email: finalEmail,
         role,
         lastSignInAt: new Date(),
       };
@@ -701,12 +710,15 @@ export function handleClientDemoBatch(pathStr: string, inputParams: Record<strin
     }
 
     if (proc === "auth.signup") {
+      const email = input.email?.trim().toLowerCase() || "";
+      const isAdmin = email.includes("admin") || email === "admin@oja.store";
+      const role: "admin" | "user" = isAdmin ? "admin" : "user";
       const user = {
-        id: 2,
-        unionId: `user-${input.email.replace(/[^a-zA-Z0-9]/g, "_")}`,
+        id: isAdmin ? 2 : Date.now(),
+        unionId: isAdmin ? "seed-admin" : `user-${email.replace(/[^a-zA-Z0-9]/g, "_")}`,
         name: input.name,
         email: input.email,
-        role: "user",
+        role,
         lastSignInAt: new Date(),
       };
       setStorage("user", user);

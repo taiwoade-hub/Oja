@@ -210,6 +210,8 @@
 .admin-loading > svg { color: var(--orange); }
 .admin-loading h1 { max-width: 650px; font-size: 42px; }
 .admin-loading > p { max-width: 500px; color: var(--muted); }
+.admin-gate-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 340px; margin-top: 10px; }
+.admin-gate-actions .btn-primary, .admin-gate-actions .btn-secondary { width: 100%; justify-content: center; text-align: center; }
 .admin-menu-button, .admin-menu-close, .admin-scrim { display: none; }
 
 @media (max-width: 1200px) {
@@ -272,4 +274,8 @@
   .integration-panel { align-items: flex-start; }
   .product-picker > div { grid-template-columns: 1fr; }
   .broadcast-form .btn-primary { width: 100%; }
+  .admin-loading { padding: 24px 16px; }
+  .admin-loading h1 { font-size: 24px; line-height: 1.25; word-break: break-word; }
+  .admin-loading > p { font-size: 13px; }
+  .admin-gate-actions { width: 100%; max-width: 100%; }
 }

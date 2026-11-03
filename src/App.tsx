@@ -26,6 +26,7 @@ export default function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/account" element={<AccountPage />} />
       </Route>
+      <Route path="/admin/login" element={<Login initialTab="admin" />} />
       <Route path="/admin/:section?" element={<AdminPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Login initialTab="signup" />} />

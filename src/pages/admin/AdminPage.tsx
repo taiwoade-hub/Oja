@@ -1,6 +1,6 @@
 import { BarChart3, BellRing, Boxes, ChevronRight, CircleDollarSign, ExternalLink, FolderTree, LayoutDashboard, LayoutTemplate, LoaderCircle, LogOut, Menu, Package, Settings, ShoppingBag, Users, X } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink, Navigate, useParams } from "react-router";
+import { Link, NavLink, Navigate, useNavigate, useParams } from "react-router";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminOverview } from "./AdminOverview";
@@ -38,13 +38,66 @@ function AdminContent({ section }: { section: string }) {
 }
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { section = "overview" } = useParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const current = nav.find((item) => item.slug === section) ?? nav[0];
-  if (isLoading) return <div className="admin-loading"><Logo /><LoaderCircle className="spin" size={24} /><p>Opening your workspace…</p></div>;
-  if (!isAuthenticated) return <div className="admin-loading"><Logo /><h1>Store operations, secured.</h1><p>Sign in with an administrator account to manage Oja.</p><Link to="/login" className="btn-primary">Sign in to continue <ChevronRight size={16} /></Link><Link to="/" className="text-link">Return to storefront</Link></div>;
-  if (user?.role !== "admin") return <div className="admin-loading"><Logo /><h1>Administrator access required.</h1><p>Your customer account does not have permission to open store operations.</p><Link to="/account" className="btn-primary">Back to my account</Link></div>;
+
+  if (isLoading)
+    return (
+      <div className="admin-loading">
+        <Logo />
+        <LoaderCircle className="spin" size={24} />
+        <p>Opening your workspace…</p>
+      </div>
+    );
+
+  if (!isAuthenticated)
+    return (
+      <div className="admin-loading">
+        <Logo />
+        <h1>Store operations, secured.</h1>
+        <p>Sign in with an administrator account to manage Oja.</p>
+        <div className="admin-gate-actions">
+          <Link to="/login?tab=admin" className="btn-primary">
+            Sign in as Administrator <ChevronRight size={16} />
+          </Link>
+          <Link to="/" className="text-link">
+            Return to storefront
+          </Link>
+        </div>
+      </div>
+    );
+
+  if (user?.role !== "admin")
+    return (
+      <div className="admin-loading">
+        <Logo />
+        <h1>Administrator access required.</h1>
+        <p>
+          You are signed in as <strong>{user?.name || user?.email || "a customer"}</strong>. This account does not have permission to manage store operations.
+        </p>
+        <div className="admin-gate-actions">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={async () => {
+              await logout();
+              navigate("/login?tab=admin");
+            }}
+          >
+            Switch to Administrator Login <ChevronRight size={16} />
+          </button>
+          <Link to="/account" className="btn-secondary">
+            Back to my customer account
+          </Link>
+          <Link to="/" className="text-link">
+            Return to storefront
+          </Link>
+        </div>
+      </div>
+    );
 
   return <div className="admin-shell">
     <aside className={menuOpen ? "admin-sidebar open" : "admin-sidebar"}>

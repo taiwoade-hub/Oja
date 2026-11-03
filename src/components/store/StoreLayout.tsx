@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, Heart, Home, MapPin, Search, ShoppingBag, User, X } from "lucide-react";
+import { Bell, Heart, Home, MapPin, Search, ShieldCheck, ShoppingBag, User, X } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
@@ -69,7 +69,9 @@ export function StoreLayout() {
     { to: "/explore", label: "Explore", icon: Search },
     { to: "/wishlist", label: "Saved", icon: Heart },
     { to: "/cart", label: "Bag", icon: ShoppingBag },
-    { to: isAuthenticated ? "/account" : "/login", label: isAuthenticated ? "Account" : "Sign in", icon: User },
+    user?.role === "admin"
+      ? { to: "/admin", label: "Admin", icon: ShieldCheck }
+      : { to: isAuthenticated ? "/account" : "/login", label: isAuthenticated ? "Account" : "Sign in", icon: User },
   ];
   return (
     <div className="store-shell">
