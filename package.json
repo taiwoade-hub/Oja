@@ -15,7 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "build:pages": "vite build --base=/Oja/ && cp dist/public/index.html dist/public/404.html",
+    "build:pages": "vite build --base=/Oja/",
     "predeploy": "npm run build:pages",
     "deploy": "gh-pages -d dist/public"
   },

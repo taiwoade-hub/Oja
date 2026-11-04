@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Lock, Mail, ShieldAlert, ShieldCheck, Sparkles, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Lock, Mail, ShieldCheck, Sparkles, User } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { trpc } from "@/providers/trpc";
